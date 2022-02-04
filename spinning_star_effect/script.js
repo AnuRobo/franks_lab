@@ -21,7 +21,11 @@ class Particle {
 	}
 	
 	draw(){
+		let x = Math.cos(this.position)*this.moveRadius + canvas.width/2;
+		let y = Math.sin(this.position)*this.moveRadius + canvas.height/2;
+		//drawStar(x, y, 5, this.size, this.size/2);
 		ctx.beginPath()
+		ctx.arc(x,y, this.moveRadius/15, 0, Math.PI * 2);
 		// This method take atleast five arguments and it will draw a simple circle on canvas
 		// Main arguments for us are the first two. These stand for the position on the x and y axis. This is a big part of our circular motion animation
 		// we will use basic trigonometry. For x-position we call Math.cos() method, this method by default rotates Infinitely back and forth b/w -1 and +1
@@ -33,7 +37,9 @@ class Particle {
 		Y position we will use Math.sine(0 function and do the same thing but for the canvas height*/
 		// Math.PI*2 == 360deg
 		// Now we have these two methods pulling on our particles in a way that will result in a circle motion if we increase this.position property
-		ctx.arc(Math.cos(this.position)*this.moveRadius + canvas.width/2, Math.sin(this.position)*this.moveRadius + canvas.height/2, this.size, 0, Math.PI*2)
+		
+		//ctx.arc(Math.cos(this.position)*this.moveRadius + canvas.width/2, Math.sin(this.position)*this.moveRadius + canvas.height/2, this.size, 0, Math.PI*2)
+		
 		/* context.arc(x,y,r,sAngle,eAngle,counterclockwise);
 		Parameter Values
 		Parameter			Description	
@@ -43,10 +49,12 @@ class Particle {
 		sAngle				The starting angle, in radians (0 is at the 3 o'clock position of the arc's circle)	
 		eAngle				The ending angle, in radians	
 		counterclockwise	Optional. Specifies whether the drawing should be counterclockwise or clockwise. False is default, and indicates clockwise, while true indicates counter-clockwise. */
-		
-		ctx.closePath()	
-		ctx.fillStyle = 'white'
-		ctx.fill()
+			
+		ctx.fillStyle = 'gold';
+		ctx.fill();
+		//ctx.strokeStyle = 'white'
+		//ctx.stroke()
+		ctx.closePath()
 	}
 	
 	update(){
@@ -64,14 +72,14 @@ function init(){
 		// moveRadius will random number b/w 0 and canvas width, this will define the size of our entire rotating particle area
 		let moveRadius = Math.random() * canvas.width
 		
-		// step will be small random number, this will be particle speed, because we are adding this number to particles position in the update method
+		// step will be small random number, this will be  particle speed, because we are adding this number to particles position in the update method
 		let step = (Math.random()*0.002) + 0.002
 		
 		// Position will be a random number along circle area Math.PI*2
 		// we pass this number to sine and cosine multiplied by particles moveRadius property and set center as the middle of canvas, this will cause the particles to spin around in circular motion 
 		let position = Math.random()*(Math.PI*2)
 		
-		let size = (Math.random() * 8) + 0.5
+		let size = (Math.random() * 25) + 15
 		
 		// we push these four variables into our particlesArray by calling new keyword on our Particle class
 		// new keyword will create a new particle object with our randomized values for loop will do this for 500 times
@@ -83,7 +91,7 @@ function init(){
 function animate(){
 	requestAnimationFrame(animate)
 	// we want our particles to leave trails as they move so instead after every step of animation i will draw a semi-transparent rectangle 
-	ctx.fillStyle = 'rgba(0,0,0,0.1)'
+	ctx.fillStyle = 'rgba(0,0,0,0.03)'
 	ctx.fillRect(0,0,innerWidth, innerHeight)
 	
 	for(let i = 0; i < particlesArray.length; i++){
@@ -100,3 +108,30 @@ init()
 
 // call animate to set things in motion 
 animate()
+
+// drawing star
+// drawStar() it will take five values this function will basically rotate around in a circle and draw paths that will create our final shape 
+// the final shape will depend on the number of spikes we pass to it and the difference between its inner and outer radius 
+//  the shape of the star depends on the proportions between inner radius and outer radius values
+function drawStar(positionX, positionY, spikes, outerRadius, innerRadius){
+	let rotation = Math.PI/2 * 3;
+	let x 		 = positionX;
+	let y		 = positionY;
+	let step	 = Math.PI / spikes;
+	
+	ctx.beginPath();
+	ctx.moveTo(positionX, positionY - outerRadius);
+	for(let i = 0; i < spikes; i++){
+		x = positionX + Math.cos(rotation) * outerRadius;
+		y = positionY + Math.sin(rotation) * outerRadius;
+		ctx.lineTo(x,y);
+		rotation += step;
+		
+		x = positionX + Math.cos(rotation) * innerRadius;
+		y = positionY + Math.sin(rotation) * innerRadius;
+		ctx.lineTo(x,y);
+		rotation += step;
+	}
+	ctx.lineTo(positionX, positionY - outerRadius);
+	ctx.closePath()
+}
